@@ -19,6 +19,15 @@ export default function({types: t}) {
     JSXOpeningElement(path, state) {
       const attributes = path.container.openingElement.attributes;
 
+      // ignore if we are a react fragment
+      const isFragment = path.container && path.container.openingElement &&
+        path.container.openingElement.name &&
+        path.container.openingElement.name.object &&
+        path.container.openingElement.name.object.name === 'React' &&
+        path.container.openingElement.name.property &&
+        path.container.openingElement.name.property.name === 'Fragment'
+      ;
+
       const newAttributes = [];
 
       if (path.container && path.container.openingElement &&
@@ -37,7 +46,9 @@ export default function({types: t}) {
         );
       }
 
-      attributes.push(...newAttributes);
+      if (!isFragment) {
+        attributes.push(...newAttributes);
+      }
     },
   };
 
